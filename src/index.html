@@ -22,6 +22,21 @@
     }])
     console.log('WebEmarsysSdk execute');
   </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        console.log('🟢 Permiso de notificaciones:', permission);
+        if (permission === 'granted') {
+          WebEmarsysSdk.push(['subscribe']);
+        } else {
+          console.warn('⚠️ El usuario no otorgó permisos de notificación.');
+        }
+      } catch (err) {
+        console.error('❌ Error al pedir permiso de notificaciones:', err);
+      }
+    });
+  </script>
 </head>
 <body>
   <app-root></app-root>

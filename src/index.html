@@ -21,7 +21,14 @@
 
   <script>
     // Identifying the visitor with email address. The email address is hashed before sending to Emarsys, as you can see in Live Event tool.
+    ScarabQueue.push(['setEmail', 'tommy.oliver@method.com.ar']);
+
+    ScarabQueue.push(['cart', [
+      {item: '000011020180190140cannonSite', price: 75, quantity: 1},
+    ]]);
     
+    // This command is required for all JS API funcions. It closes and fires the ScarabQueue. Should be the last call on the page, called only once.
+    ScarabQueue.push(['go']);
     
     // You can easily test how this works. Just replace the demo Merchant ID with your own.
     // Log in to the Emarsys Marketing Platform, go to Admin -> Data Sources, click Live Events, and on the events screen select ‘my visit’ from the dropdown. 
@@ -32,32 +39,23 @@
     localStorage.setItem('emarsys:debug', 'true');
   </script>
   <script type="text/javascript">
-
-    ScarabQueue.push(['setEmail', 'tommy.oliver@method.com.ar']);
-
-    ScarabQueue.push(['cart', [
-      {item: '000011020180190140cannonSite', price: 75, quantity: 1},
-    ]]);
-    
-    // This command is required for all JS API funcions. It closes and fires the ScarabQueue. Should be the last call on the page, called only once.
-    ScarabQueue.push(['go']);
-
-
-    window.WebEmarsysSdk = window.WebEmarsysSdk || [];
-    WebEmarsysSdk.push(['init', {
-      applicationCode: 'EMSDE-283A2', // your Domain code obtained above
-      enableMacSafariVapid: false, // If true, enables VAPID instead of APNS for Safari on Mac
-      defaultNotificationTitle: 'Web push Piero', // sets your default title for push notifications
-      defaultNotificationIcon: 'https://yoursite.com/img/your-logo.png', // URL to your notification icon
-      autoSubscribe: true, // If true, prompts a user to subscribe for pushes upon SDK initialization which is not recommended
-      serviceWorker: {
-        url: 'web-emarsys-service-worker.js',
-        applicationServerPublicKey: 'BIHgJ07cJBGpQplKGGd-CdJWgNYwBqvWNg65fiPXpIUn9fZuNZ121tUMdmwpBkzPYtu9i17JmFD_eboYiS3KcSU'
-      }
-    }])
-    console.log('WebEmarsysSdk execute');
-    WebEmarsysSdk.push(['onError', (e) => console.error('Emarsys SDK error:', e)]);
-    WebEmarsysSdk.push(['onSubscribe', () => console.log('✅ Usuario suscripto a Web Push')]);
+    setTimeout(() => {
+      window.WebEmarsysSdk = window.WebEmarsysSdk || [];
+      WebEmarsysSdk.push(['init', {
+        applicationCode: 'EMSDE-283A2', // your Domain code obtained above
+        enableMacSafariVapid: false, // If true, enables VAPID instead of APNS for Safari on Mac
+        defaultNotificationTitle: 'Web push Piero', // sets your default title for push notifications
+        defaultNotificationIcon: 'https://yoursite.com/img/your-logo.png', // URL to your notification icon
+        autoSubscribe: true, // If true, prompts a user to subscribe for pushes upon SDK initialization which is not recommended
+        serviceWorker: {
+          url: 'web-emarsys-service-worker.js',
+          applicationServerPublicKey: 'BIHgJ07cJBGpQplKGGd-CdJWgNYwBqvWNg65fiPXpIUn9fZuNZ121tUMdmwpBkzPYtu9i17JmFD_eboYiS3KcSU'
+        }
+      }])
+      console.log('WebEmarsysSdk execute');
+      WebEmarsysSdk.push(['onError', (e) => console.error('Emarsys SDK error:', e)]);
+      WebEmarsysSdk.push(['onSubscribe', () => console.log('✅ Usuario suscripto a Web Push')]);
+    }, 10000)
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {

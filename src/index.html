@@ -11,7 +11,7 @@
     localStorage.setItem('emarsys:debug', 'true');
   </script>
   <script type="text/javascript">
-    var WebEmarsysSdk = WebEmarsysSdk || []
+    window.WebEmarsysSdk = WebEmarsysSdk || []
     WebEmarsysSdk.push(['init', {
       applicationCode: 'EMSDE-283A2', // your Domain code obtained above
       enableMacSafariVapid: false, // If true, enables VAPID instead of APNS for Safari on Mac

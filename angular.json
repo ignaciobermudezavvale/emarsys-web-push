@@ -40,6 +40,12 @@
             "scripts": []
           },
           "configurations": {
+            "noopt": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "outputHashing": "none"
+            },
             "production": {
               "budgets": [
                 {

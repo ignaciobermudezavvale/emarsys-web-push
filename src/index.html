@@ -22,6 +22,10 @@
   <script>
     // Identifying the visitor with email address. The email address is hashed before sending to Emarsys, as you can see in Live Event tool.
     ScarabQueue.push(['setEmail', 'tommy.oliver@method.com.ar']);
+
+    ScarabQueue.push(['cart', [
+      {item: '000011020180190140cannonSite', price: 75, quantity: 1},
+    ]]);
     
     // This command is required for all JS API funcions. It closes and fires the ScarabQueue. Should be the last call on the page, called only once.
     ScarabQueue.push(['go']);

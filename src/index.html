@@ -20,19 +20,13 @@
   </script>
 
   <script>
-    // Identifying the visitor with email address. The email address is hashed before sending to Emarsys, as you can see in Live Event tool.
-    ScarabQueue.push(['setEmail', 'tommy.oliver@method.com.ar']);
+    ScarabQueue.push(['login', 'tommy.oliver@method.com.ar']);
 
     ScarabQueue.push(['cart', [
       {item: '000011020180190140cannonSite', price: 75, quantity: 1},
     ]]);
-    
-    // This command is required for all JS API funcions. It closes and fires the ScarabQueue. Should be the last call on the page, called only once.
     ScarabQueue.push(['go']);
-    
-    // You can easily test how this works. Just replace the demo Merchant ID with your own.
-    // Log in to the Emarsys Marketing Platform, go to Admin -> Data Sources, click Live Events, and on the events screen select ‘my visit’ from the dropdown. 
-    // Hit Run in JSFiddle. Refresh Live Events and you should see these event reported with the above values.
+
   </script>
 
   <script>

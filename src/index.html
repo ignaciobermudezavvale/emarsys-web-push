@@ -30,27 +30,49 @@
   </script>
 
   <script>
-    localStorage.setItem('emarsys:debug', 'true');
-  </script>
-  <script type="text/javascript">
-    setTimeout(() => {
-      window.WebEmarsysSdk = window.WebEmarsysSdk || [];
-      WebEmarsysSdk.push(['init', {
-        applicationCode: 'EMSDE-283A2', // your Domain code obtained above
-        enableMacSafariVapid: false, // If true, enables VAPID instead of APNS for Safari on Mac
-        defaultNotificationTitle: 'Web push Piero', // sets your default title for push notifications
-        defaultNotificationIcon: 'https://yoursite.com/img/your-logo.png', // URL to your notification icon
-        autoSubscribe: true, // If true, prompts a user to subscribe for pushes upon SDK initialization which is not recommended
-        serviceWorker: {
-          url: 'web-emarsys-service-worker.js',
-          applicationServerPublicKey: 'BIHgJ07cJBGpQplKGGd-CdJWgNYwBqvWNg65fiPXpIUn9fZuNZ121tUMdmwpBkzPYtu9i17JmFD_eboYiS3KcSU'
+  // Activar modo debug
+  localStorage.setItem('emarsys:debug', 'true');
+
+  // Asegurar la cola global
+  window.WebEmarsysSdk = window.WebEmarsysSdk || [];
+
+  // Esperar a que cargue el SDK
+  window.addEventListener('load', () => {
+    WebEmarsysSdk.push(['init', {
+      applicationCode: 'EMSDE-283A2',
+      enableMacSafariVapid: false,
+      defaultNotificationTitle: 'Web push Piero',
+      defaultNotificationIcon: 'https://yoursite.com/img/your-logo.png',
+      autoSubscribe: false,
+      serviceWorker: {
+        url: 'web-emarsys-service-worker.js',
+        applicationServerPublicKey: 'BIHgJ07cJBGpQplKGGd-CdJWgNYwBqvWNg65fiPXpIUn9fZuNZ121tUMdmwpBkzPYtu9i17JmFD_eboYiS3KcSU'
+      }
+    }]);
+
+    // Cuando el SDK esté listo
+    WebEmarsysSdk.push(['ready', () => {
+      console.log('🟢 SDK Emarsys listo');
+      console.log('🔸 Permiso actual:', Notification.permission);
+
+      WebEmarsysSdk.push(['isSubscribed', (status) => {
+        console.log('¿Está suscrito?:', status);
+        if (!status) {
+          console.log('📢 Suscribiendo usuario...');
+          WebEmarsysSdk.push(['subscribe', (s) => console.log('🆕 Nueva suscripción:', s)]);
+        } else {
+          WebEmarsysSdk.push(['getSubscription', (s) => console.log('📬 Subscription existente:', s)]);
         }
-      }])
-      console.log('WebEmarsysSdk execute');
-      WebEmarsysSdk.push(['onError', (e) => console.error('Emarsys SDK error:', e)]);
-      WebEmarsysSdk.push(['onSubscribe', () => console.log('✅ Usuario suscripto a Web Push')]);
-    }, 10000)
-  </script>
+      }]);
+
+      // Vincular contacto
+      WebEmarsysSdk.push(['setContact', { contactFieldId: 3, contactFieldValue: 'tommy.oliver@method.com.ar' }]);
+    }]);
+
+    WebEmarsysSdk.push(['onError', (e) => console.error('❌ Error SDK Emarsys:', e)]);
+    WebEmarsysSdk.push(['onSubscribe', () => console.log('✅ Usuario suscripto a Web Push')]);
+  });
+</script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       try {

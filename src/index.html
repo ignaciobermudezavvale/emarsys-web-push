@@ -69,29 +69,25 @@
        SUBSCRIBE FLOW
     ========================== */
     function autoSubscribe() {
-    WebEmarsysSdk.push(['isSubscribed', (subscribed) => {
-      if (subscribed) return;
+      WebEmarsysSdk.push(['isSubscribed', (subscribed) => {
+        if (subscribed) return;
 
-      WebEmarsysSdk.push(['setContact', {
-        contactFieldId: 3,
-        contactFieldValue: 'tommy.oliver@method.com.ar'
+        console.log('👤 Login del contacto...');
+        WebEmarsysSdk.push(['login', {
+          contactFieldId: 3, // Email
+          contactFieldValue: 'tommy.oliver@method.com.ar'
+        }]);
+
+        console.log('📢 Suscribiendo Web Push...');
+        WebEmarsysSdk.push(['subscribe']);
       }]);
-
-      WebEmarsysSdk.push(['subscribe']);
-    }]);
-  }
-
-  WebEmarsysSdk.push(['ready', () => {
-
-    // Caso 1: permiso ya otorgado → automático
-    if (Notification.permission === 'granted') {
-      autoSubscribe();
-      return;
     }
 
-    // Caso 2: permiso no definido → esperar acción del usuario
-    console.log('🔔 Mostrar soft prompt de notificaciones');
-  }]);
+    WebEmarsysSdk.push(['ready', () => {
+      if (Notification.permission === 'granted') {
+        autoSubscribe();
+      }
+    }]);
   </script>
 </head>
 

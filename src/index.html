@@ -1,13 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>EmarsysWebPush</title>
+  <title>Emarsys Web Push</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <script type="text/javascript" src="https://client-version.cf.emarsys.net/web-emarsys-sdk-v4/latest/web-emarsys-sdk.js" async></script>
 
+  <!-- Emarsys Web SDK -->
+  <script
+    src="https://client-version.cf.emarsys.net/web-emarsys-sdk-v4/latest/web-emarsys-sdk.js"
+    async>
+  </script>
+
+  <!-- Emarsys Predict (opcional) -->
   <script type="text/javascript">
     var ScarabQueue = ScarabQueue || [];
     (function(id) {
@@ -20,24 +25,19 @@
   </script>
 
   <script>
-    ScarabQueue.push(['setEmail', 'tommy.oliver@method.com.ar']);
+    /* ==========================
+       DEBUG (solo dev)
+    ========================== */
+    localStorage.setItem('emarsys:debug', 'true');
 
-    ScarabQueue.push(['cart', [
-      {item: '000011020180190140cannonSite', price: 75, quantity: 1},
-    ]]);
-    ScarabQueue.push(['go']);
+    /* ==========================
+       Cola global SDK
+    ========================== */
+    window.WebEmarsysSdk = window.WebEmarsysSdk || [];
 
-  </script>
-
-  <script>
-  // Activar modo debug
-  localStorage.setItem('emarsys:debug', 'true');
-
-  // Asegurar la cola global
-  window.WebEmarsysSdk = window.WebEmarsysSdk || [];
-
-  // Esperar a que cargue el SDK
-  window.addEventListener('load', () => {
+    /* ==========================
+       INIT SDK
+    ========================== */
     WebEmarsysSdk.push(['init', {
       applicationCode: 'EMSDE-283A2',
       enableMacSafariVapid: false,
@@ -50,60 +50,61 @@
       }
     }]);
 
-    // Cuando el SDK esté listo
+    /* ==========================
+       READY
+    ========================== */
     WebEmarsysSdk.push(['ready', () => {
-      console.log('🟢 SDK Emarsys listo');
-      console.log('🔸 Permiso actual:', Notification.permission);
-
-      WebEmarsysSdk.push(['isSubscribed', (status) => {
-        console.log('¿Está suscrito?:', status);
-        if (!status) {
-          console.log('📢 Suscribiendo usuario...');
-          WebEmarsysSdk.push(['subscribe', (s) => console.log('🆕 Nueva suscripción:', s)]);
-        } else {
-          WebEmarsysSdk.push(['getSubscription', (s) => console.log('📬 Subscription existente:', s)]);
-        }
-      }]);
-
-      // Vincular contacto
-      WebEmarsysSdk.push(['setContact', { contactFieldId: 3, contactFieldValue: 'tommy.oliver@method.com.ar' }]);
+      console.log('🟢 Emarsys SDK listo');
+      console.log('🔔 Permiso:', Notification.permission);
     }]);
 
-    WebEmarsysSdk.push(['onError', (e) => console.error('❌ Error SDK Emarsys:', e)]);
-    WebEmarsysSdk.push(['onSubscribe', () => console.log('✅ Usuario suscripto a Web Push')]);
-  });
-</script>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const permission = await Notification.requestPermission();
-        console.log('🟢 Permiso de notificaciones:', permission);
-        if (permission === 'granted') {
-          WebEmarsysSdk.push(['subscribe']);
-        } else {
-          console.warn('⚠️ El usuario no otorgó permisos de notificación.');
-        }
-      } catch (err) {
-        console.error('❌ Error al pedir permiso de notificaciones:', err);
-      }
-    });
-  </script>
-  <script>
-    function generalSubscribe() {
-            return WebEmarsysSdk.subscribe()
+    /* ==========================
+       ERROR HANDLER
+    ========================== */
+    WebEmarsysSdk.push(['onError', (e) => {
+      console.error('❌ Emarsys error:', e);
+    }]);
+
+    /* ==========================
+       SUBSCRIBE FLOW
+    ========================== */
+    function autoSubscribe() {
+    WebEmarsysSdk.push(['isSubscribed', (subscribed) => {
+      if (subscribed) return;
+
+      WebEmarsysSdk.push(['setContact', {
+        contactFieldId: 3,
+        contactFieldValue: 'tommy.oliver@method.com.ar'
+      }]);
+
+      WebEmarsysSdk.push(['subscribe']);
+    }]);
+  }
+
+  WebEmarsysSdk.push(['ready', () => {
+
+    // Caso 1: permiso ya otorgado → automático
+    if (Notification.permission === 'granted') {
+      autoSubscribe();
+      return;
     }
-    // The submit event fires when a <form> is submitted.
-    document.addEventListener('submit', function(e) {
-            generalSubscribe();
-    });
-    // An element receives a click event when a pointing device button (such as a mouse's primary mouse button) is both pressed and released while the pointer is located inside the element.
-    document.addEventListener('click', function(e) {
-            generalSubscribe();
-    });
+
+    // Caso 2: permiso no definido → esperar acción del usuario
+    console.log('🔔 Mostrar soft prompt de notificaciones');
+  }]);
   </script>
 </head>
+
 <body>
-  <button onclick="generalSubscribe()">Subscribe</button>
+  <!-- Acción explícita del usuario -->
+  <button onclick="
+    Notification.requestPermission().then(p => {
+      if (p === 'granted') autoSubscribe();
+    })
+  ">
+    Activar notificaciones
+  </button>
+
   <app-root></app-root>
 </body>
 </html>
